@@ -15,5 +15,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(client.Current(location))
+	fmt.Println(client.GetWeather(location))
 }
