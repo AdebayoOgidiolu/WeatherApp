@@ -17,7 +17,7 @@ func TestConditionsIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	conditions, err := client.Current("London")
+	conditions, err := client.GetWeather("London")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -15,10 +15,7 @@ func TestNewClient(t *testing.T) {
 	if err == nil {
 		t.Fatal("want error with empty API key, got nil")
 	}
-	APIKey := os.Getenv("OPENWEATHERMAP_API_KEY")
-	if APIKey == "" {
-		t.Fatal("OPENWEATHERMAP_API_KEY must be set to run this test")
-	}
+	APIKey := "DUMMY"
 	client, err := weather.NewClient(APIKey)
 	if err != nil {
 		t.Fatal(err)
@@ -28,12 +25,12 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestConditions(t *testing.T) {
+func TestGetWeather(t *testing.T) {
 	client, err := weather.NewClient("Dummy API key")
 	if err != nil {
 		t.Fatal(err)
 	}
-	ts := httptest.NewTLSServer(http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wantURL := "/data/2.5/weather"
 		if r.URL.EscapedPath() != wantURL {
 			t.Errorf("want URL %q, got %q", wantURL, r.URL.Path)
@@ -51,7 +48,7 @@ func TestConditions(t *testing.T) {
 	}))
 	client.APIURL = ts.URL
 	client.HTTPClient = ts.Client()
-	conditions, err := client.Current("London")
+	conditions, err := client.GetWeather("London")
 	if err != nil {
 		t.Fatal(err)
 	}
