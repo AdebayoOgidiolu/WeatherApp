@@ -48,7 +48,7 @@ func TestGetWeather(t *testing.T) {
 	}))
 	client.APIURL = ts.URL
 	client.HTTPClient = ts.Client()
-	conditions, err := client.GetWeather("London", false)
+	conditions, err := client.GetWeather("London")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,20 +56,57 @@ func TestGetWeather(t *testing.T) {
 	if wantSummary != conditions.Summary {
 		t.Errorf("want summary %q, got %q", wantSummary, conditions.Summary)
 	}
-	wantTemp := 1.63
-	if !closeEnough(wantTemp, conditions.Temperature) {
-		t.Errorf("want temperature %f, got %f", wantTemp, conditions.Temperature)
+	wantTemp := 274.78
+	if !closeEnough(wantTemp, conditions.TemperatureKelvin) {
+		t.Errorf("want temperature %f, got %f", wantTemp, conditions.TemperatureKelvin)
 	}
-	conditions, err = client.GetWeather("London", true)
+	conditions, err = client.GetWeather("London")
 	if err != nil {
 		t.Fatal(err)
-	}
-	wantFahrenheitTemp := 34.934
-	if !closeEnough(wantFahrenheitTemp, conditions.Temperature) {
-		t.Errorf("want temperature %f, got %f", wantFahrenheitTemp, conditions.Temperature)
 	}
 }
 
 func closeEnough(a, b float64) bool {
 	return math.Abs(a-b) < 0.00000000000001
+}
+
+func TestParseArgs(t *testing.T) {
+	t.Parallel()
+	tcs := []struct{
+		input []string
+		wantFahrMode bool
+		wantLocation string
+	}{
+		{
+			input: []string{"-fahr", "lagos"},
+			wantFahrMode: true,
+			wantLocation: "lagos",
+		},
+		{
+			input: []string{"lagos"},
+			wantFahrMode: false,
+			wantLocation: "lagos",
+		},
+	}
+	for _, tc := range tcs {
+		fahrMode, location := weather.ParseArgs(tc.input)
+		if tc.wantFahrMode != fahrMode {
+			t.Errorf("input %q, want fahrMode %t, got %t", tc.input, tc.wantFahrMode, fahrMode)
+		}
+		if tc.wantLocation != location {
+			t.Errorf("input %q, want location %q, got %q", tc.input, tc.wantLocation, location)
+		}
+	}
+}
+
+func TestConditionsString(t *testing.T) {
+	input := weather.Conditions{
+		Summary: "Sunny",
+		TemperatureKelvin: 288.55,
+	}
+	want := "Sunny 15.4ºC"
+	got := input.StringCelsius()
+	if want != got {
+		t.Errorf("input: %#v want %q, got %q", input, want, got)
+	}
 }
