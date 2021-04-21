@@ -46,11 +46,9 @@ func TestGetWeather(t *testing.T) {
 		defer jsonStream.Close()
 		io.Copy(w, jsonStream)
 	}))
-	var fahr *bool
-	*fahr = true
 	client.APIURL = ts.URL
 	client.HTTPClient = ts.Client()
-	conditions, err := client.GetWeather("London", fahr)
+	conditions, err := client.GetWeather("London", false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,6 +59,14 @@ func TestGetWeather(t *testing.T) {
 	wantTemp := 1.63
 	if !closeEnough(wantTemp, conditions.Temperature) {
 		t.Errorf("want temperature %f, got %f", wantTemp, conditions.Temperature)
+	}
+	conditions, err = client.GetWeather("London", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantFahrenheitTemp := 34.934
+	if !closeEnough(wantFahrenheitTemp, conditions.Temperature) {
+		t.Errorf("want temperature %f, got %f", wantFahrenheitTemp, conditions.Temperature)
 	}
 }
 
