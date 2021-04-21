@@ -46,9 +46,11 @@ func TestGetWeather(t *testing.T) {
 		defer jsonStream.Close()
 		io.Copy(w, jsonStream)
 	}))
+	var fahr *bool
+	*fahr = true
 	client.APIURL = ts.URL
 	client.HTTPClient = ts.Client()
-	conditions, err := client.GetWeather("London")
+	conditions, err := client.GetWeather("London", fahr)
 	if err != nil {
 		t.Fatal(err)
 	}

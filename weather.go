@@ -42,7 +42,7 @@ func NewClient(APIKey string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetWeather(location string) (Conditions, error) {
+func (c *Client) GetWeather(location string, fahr *bool) (Conditions, error) {
 	URL := fmt.Sprintf("%s/data/2.5/weather?q=%s&appid=%s", c.APIURL, url.QueryEscape(location), url.QueryEscape(c.APIKey))
 	resp, err := c.HTTPClient.Get(URL)
 	if err != nil {
@@ -57,8 +57,16 @@ func (c *Client) GetWeather(location string) (Conditions, error) {
 	if err != nil {
 		return Conditions{}, err
 	}
-	return Conditions{
-		Summary:     data.Weather[0].Main,
-		Temperature: data.Main.Temp - 273.15,
-	}, nil
+	if *fahr == true {
+		return Conditions{
+			Summary:     data.Weather[0].Main,
+			Temperature: (data.Main.Temp-273.15)*9/5 + 32,
+		}, nil
+	} else {
+		return Conditions{
+			Summary:     data.Weather[0].Main,
+			Temperature: data.Main.Temp - 273.15,
+		}, nil
+	}
+
 }
