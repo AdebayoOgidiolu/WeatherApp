@@ -28,12 +28,12 @@ type Conditions struct {
 
 func (c Conditions) StringCelsius() string {
 	temp := c.TemperatureKelvin-273.15
-	return fmt.Sprintf("%s %.1fºC", c.Summary, temp)
+	return fmt.Sprintf("%s %s %.1fºC", Emoji(c.Summary), c.Summary, temp)
 }
 
 func (c Conditions) StringFahrenheit() string {
 	temp := (c.TemperatureKelvin-273.15)*9/5 + 32
-	return fmt.Sprintf("%s %.1fºF", c.Summary, temp)
+	return fmt.Sprintf("%s %s %.1fºF", Emoji(c.Summary), c.Summary, temp)
 }
 
 type Client struct {
@@ -104,4 +104,8 @@ func RunCLI() {
 	} else {
 		fmt.Println(conditions.StringCelsius())
 	}
+}
+
+func Emoji(s string) string {
+	return ""
 }

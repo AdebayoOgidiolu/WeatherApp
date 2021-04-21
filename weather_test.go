@@ -100,13 +100,32 @@ func TestParseArgs(t *testing.T) {
 }
 
 func TestConditionsString(t *testing.T) {
+	t.Parallel()
 	input := weather.Conditions{
 		Summary: "Sunny",
 		TemperatureKelvin: 288.55,
 	}
-	want := "Sunny 15.4ºC"
+	want := "☀️ Sunny 15.4ºC"
 	got := input.StringCelsius()
 	if want != got {
 		t.Errorf("input: %#v want %q, got %q", input, want, got)
+	}
+}
+
+func TestEmojis(t *testing.T) {
+	t.Parallel()
+	tcs := []struct{
+		input string
+		want string
+	}{
+		{ input: "Sunny", want: "☀️" },
+		{ input: "Clouds", want: "☁️" },
+		{ input: "Rain", want: "🌧" },
+	}
+	for _, tc := range tcs {
+		got := weather.Emoji(tc.input)
+		if tc.want != got {
+			t.Errorf("input %q, want %q, got %q", tc.input, tc.want, got)
+		}
 	}
 }
